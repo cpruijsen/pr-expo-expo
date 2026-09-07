@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
+- [Internal] Remove the `@expo/metro` type augmentations, which Metro's own types now cover. ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
+
 ## 56.0.3 — 2026-05-29
 
 ### 🐛 Bug fixes

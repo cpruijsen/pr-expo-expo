@@ -17,6 +17,8 @@ import type { ConfigT, SerializerConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 import path from 'path';
 
+import type { AsyncDependencyType } from '../transform-worker/collect-dependencies';
+import type { ExpoCustomTransformOptions } from '../transform-worker/types';
 import { precomputeChunkFilenames } from './computeChunkFilenames';
 import { stringToUUID } from './debugId';
 import { getExportPathForDependencyWithOptions } from './exportPath';
@@ -142,8 +144,10 @@ export async function graphToSerialAssetsAsync(
   const baseUrl = getBaseUrlOption(graph, { serializerOptions: serializeChunkOptions });
   const assetPublicUrl = (baseUrl.replace(/\/+$/, '') ?? '') + '/assets';
   const platform = getPlatformOption(graph, options) ?? 'web';
-  const isHosted =
-    platform === 'web' || (graph.transformOptions?.customTransformOptions?.hosted && isExporting);
+  const customTransformOptions = graph.transformOptions?.customTransformOptions as
+    | ExpoCustomTransformOptions
+    | undefined;
+  const isHosted = platform === 'web' || (customTransformOptions?.hosted && isExporting);
   const publicPath = isExporting
     ? isHosted
       ? `/assets?export_path=${assetPublicUrl}`
@@ -720,7 +724,7 @@ function gatherChunks(
   function includeModule(entryModule: Module<MixedOutput>) {
     const splitChunks = entryChunk.options.serializerOptions?.splitChunks !== false;
     for (const dependency of entryModule.dependencies.values()) {
-      const asyncType = dependency.data.data.asyncType;
+      const asyncType = dependency.data.data.asyncType as AsyncDependencyType | null;
       const isWorker = asyncType === 'worker';
       if (!isResolvedDependency(dependency)) {
         continue;
